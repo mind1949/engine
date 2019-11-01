@@ -149,6 +149,18 @@ func (group *RouterGroup) Use(middleware ...HandlerFunc) {
 	group.Handlers = append(group.Handlers, middleware...)
 }
 
+// Greates a new router group. You should create add all the routes that share that have common middlwares or same path prefix.
+// For example, all the routes that use a common middlware for authorization could be grouped.
+func (group *RouterGroup) Group(component string, handlers ...HandlerFunc) *RouterGroup {
+	prefix := path.Join(group.prefix, component)
+	return &RouterGroup{
+		Handlers: handlers,
+		parent:   group,
+		prefix:   prefix,
+		engine:   group.engine,
+	}
+}
+
 // Handle registers a new request handler and middleware with the given path and method.
 // The laster handler should be the real handler, the other ones should be middleware that can and should be shared among different routes.
 //
@@ -188,6 +200,11 @@ func (group *RouterGroup) PATCH(path string, handlers ...HandlerFunc) {
 // PUT is a shortcut for router.Handle("PUT", path, handle)
 func (group *RouterGroup) PUT(path string, handlers ...HandlerFunc) {
 	group.Handle("PUT", path, handlers)
+}
+
+// Parent 测试
+func (group *RouterGroup) Parent() *RouterGroup {
+	return group.parent
 }
 
 func (group *RouterGroup) allHandlers(handlers []HandlerFunc) []HandlerFunc {
