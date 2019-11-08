@@ -178,8 +178,8 @@ func (group *RouterGroup) Handle(method, p string, handlers []HandlerFunc) {
 }
 
 // POST is the shortcut for router.Handle("POST", path, handle)
-func (group *RouterGroup) POST(method, p string, handlers ...HandlerFunc) {
-	group.Handle(method, p, handlers)
+func (group *RouterGroup) POST(p string, handlers ...HandlerFunc) {
+	group.Handle("POST", p, handlers)
 }
 
 // GET is a shortcut for router.Handle("GET", path, handle)
