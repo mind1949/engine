@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"fmt"
+	"log"
 	"time"
 )
 
@@ -15,6 +15,6 @@ func Logger() HandlerFunc {
 		c.Next()
 
 		// Calculate request resolution time
-		fmt.Printf("[%d] %s in %v\n", c.Writer.Status(), c.Req.RequestURI, time.Since(t))
+		log.Printf("%s in %v", c.Req.RequestURI, time.Since(t))
 	}
 }
