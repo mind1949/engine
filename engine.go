@@ -287,7 +287,9 @@ func (c *Context) ParseBody(item interface{}) error {
 // It also sets the Content-Type as "application/json"
 func (c *Context) JSON(code int, obj interface{}) {
 	c.Writer.Header().Set("Content-Type", "application/json")
-	c.Writer.WriteHeader(code)
+	if code >= 0 {
+		c.Writer.WriteHeader(code)
+	}
 	encoder := json.NewEncoder(c.Writer)
 	if err := encoder.Encode(obj); err != nil {
 		c.Error(err, obj)
@@ -299,7 +301,9 @@ func (c *Context) JSON(code int, obj interface{}) {
 // It also sets the Content-Type as "application/json"
 func (c *Context) XML(code int, obj interface{}) {
 	c.Writer.Header().Set("Content-Type", "application/xml")
-	c.Writer.WriteHeader(code)
+	if code >= 0 {
+		c.Writer.WriteHeader(code)
+	}
 	encoder := xml.NewEncoder(c.Writer)
 	if err := encoder.Encode(obj); err != nil {
 		c.Error(err, obj)
@@ -311,7 +315,9 @@ func (c *Context) XML(code int, obj interface{}) {
 // It also update the http code and set the Content-Type as "application/html"
 func (c *Context) HTML(code int, name string, data interface{}) {
 	c.Writer.Header().Set("Content-Type", "application/html")
-	c.Writer.WriteHeader(code)
+	if code >= 0 {
+		c.Writer.WriteHeader(code)
+	}
 	if err := c.engine.HTMLTemplates.ExecuteTemplate(c.Writer, name, data); err != nil {
 		c.Error(err, map[string]interface{}{
 			"name": name,
