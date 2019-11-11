@@ -149,8 +149,8 @@ func (group *RouterGroup) Use(middleware ...HandlerFunc) {
 	group.Handlers = append(group.Handlers, middleware...)
 }
 
-// Greates a new router group. You should create add all the routes that share that have common middlwares or same path prefix.
-// For example, all the routes that use a common middlware for authorization could be grouped.
+// Creates a new router group. You should create add all the routes that share that have common middleware or same path prefix.
+// For example, all the routes that use a common middleware for authorization could be grouped.
 func (group *RouterGroup) Group(component string, handlers ...HandlerFunc) *RouterGroup {
 	prefix := path.Join(group.prefix, component)
 	return &RouterGroup{
@@ -202,15 +202,10 @@ func (group *RouterGroup) PUT(path string, handlers ...HandlerFunc) {
 	group.Handle("PUT", path, handlers)
 }
 
-// Parent 测试
-func (group *RouterGroup) Parent() *RouterGroup {
-	return group.parent
-}
-
 func (group *RouterGroup) allHandlers(handlers []HandlerFunc) []HandlerFunc {
 	local := append(group.Handlers, handlers...)
 	if group.parent != nil {
-		return group.allHandlers(local)
+		return group.parent.allHandlers(local)
 	} else {
 		return local
 	}
