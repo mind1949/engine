@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"bytes"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -22,9 +23,11 @@ type (
 
 	// used internally to collect a error occurred during a http request
 	ErrorMsg struct {
-		Message string      `json:"message"`
-		Meta    interface{} `json:"meta"`
+		Err  string      `json:"error"`
+		Meta interface{} `json:"meta"`
 	}
+
+	ErrorMsgs []ErrorMsg
 
 	// context is the most important part of engine. it allow us to pass variables between middleware,
 	// manage the flow, validate the JSON of a request and render a JSON response for example.
@@ -32,7 +35,7 @@ type (
 		Req      *http.Request
 		Writer   http.ResponseWriter
 		Keys     map[string]interface{}
-		Errors   []ErrorMsg
+		Errors   ErrorMsgs
 		Params   httprouter.Params
 		handlers []HandlerFunc
 		engine   *Engine
@@ -56,6 +59,16 @@ type (
 		HTMLTemplates *template.Template
 	}
 )
+
+func (e ErrorMsgs) String() string {
+	var buffer = new(bytes.Buffer)
+	for i, msg := range e {
+		if _, err := fmt.Fprintf(buffer, "Error #%02d: %s \n     Meta: %v\n\n", i+1, msg.Err, msg.Meta); err != nil {
+			panic(err)
+		}
+	}
+	return buffer.String()
+}
 
 // Return a new Blank Engine without any middleware attached
 // the most basic configuration
@@ -225,8 +238,8 @@ func (c *Context) Fail(code int, err error) {
 // A middleware can be used to collect all the errors and push them to a database together, print a log, or append it in the HTTP response.
 func (c *Context) Error(err error, meta interface{}) {
 	c.Errors = append(c.Errors, ErrorMsg{
-		Message: err.Error(),
-		Meta:    meta,
+		Err:  err.Error(),
+		Meta: meta,
 	})
 }
 

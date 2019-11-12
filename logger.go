@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"fmt"
 	"log"
 	"time"
 )
@@ -9,7 +10,7 @@ func (c *Context) ErrorLogger() HandlerFunc {
 	return func(c *Context) {
 		defer func() {
 			if len(c.Errors) > 0 {
-				log.Println(c.Errors)
+				fmt.Printf("%s\n", c.Errors)
 				c.JSON(-1, c.Errors)
 			}
 		}()
